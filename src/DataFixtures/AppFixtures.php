@@ -15,12 +15,6 @@ use Faker\Factory;
 
 class AppFixtures extends Fixture
 {
-    private $translator;
-    private $faker;
-    private $kanaNameFaker;
-    private $foodFakerEn;
-    private $foodFakerJap;
-
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->translator = $entityManager->getRepository(Translation::class);
@@ -128,11 +122,11 @@ class AppFixtures extends Fixture
             }
 
             for ($j = 0; $j < rand(2, 12); $j++) {
-                $dish->addIngredient($ingredients[rand(0, 29)]);
+                $dish->addIngredient($ingredients[rand(0, 99)]);
             }
 
             for ($k = 0; $k < rand(1, 6); $k++) {
-                $dish->addTag($tags[rand(0, 19)]);
+                $dish->addTag($tags[rand(0, 99)]);
             }
 
             $this->translator->translate($dish, 'title', 'ja', $this->foodFakerJap->foodName());
