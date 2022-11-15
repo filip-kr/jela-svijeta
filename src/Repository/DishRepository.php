@@ -39,6 +39,11 @@ class DishRepository extends ServiceEntityRepository
         }
     }
 
+    public function getDishesByParameters(array $params): array
+    {
+        
+    }
+
 //    /**
 //     * @return Dish[] Returns an array of Dish objects
 //     */
