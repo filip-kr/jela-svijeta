@@ -29,7 +29,7 @@ class DishController extends AbstractController
         }
 
         $data = [];
-        $dishes = $dishRepository->findAll();
+        $dishes = $dishRepository->findByParameters($request->query->all());
 
         if ($request->query->get('lang') == 'en') {
             foreach ($dishes as $dish) {

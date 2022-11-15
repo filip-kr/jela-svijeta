@@ -39,9 +39,29 @@ class DishRepository extends ServiceEntityRepository
         }
     }
 
-    public function getDishesByParameters(array $params): array
+    public function findByParameters(array $params): array
     {
-        
+        $query = $this->createQueryBuilder('d')
+            ->select('d');
+
+        if (isset($params['diff_time'])) {
+
+        }
+
+        if (isset($params['category'])) {
+            $query->andWhere('d.category = :val')
+            ->setParameter('val', $params['category']);
+        }
+
+        // if (isset($params['tags'])) {
+        //     $query->innerJoin('d.tags', 't')
+        //         ->andWhere('t.id = (:val)')
+        //         ->setParameter('val', $params['tags']);
+        // }
+
+        // dd($query->getQuery());
+        return $query->getQuery()
+            ->getResult();
     }
 
 //    /**
