@@ -18,7 +18,7 @@ class Language
     private ?string $locale = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $local_name = null;
+    private ?string $localName = null;
 
     public function getId(): ?int
     {
@@ -39,12 +39,12 @@ class Language
 
     public function getLocalName(): ?string
     {
-        return $this->local_name;
+        return $this->localName;
     }
 
-    public function setLocalName(string $local_name): self
+    public function setLocalName(string $localName): self
     {
-        $this->local_name = $local_name;
+        $this->localName = $localName;
 
         return $this;
     }

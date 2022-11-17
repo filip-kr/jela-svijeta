@@ -28,13 +28,13 @@ class Tag implements Translatable
     #[Gedmo\Locale]
     private $locale;
 
-    #[ORM\ManyToMany(targetEntity: Dish::class, mappedBy: 'tags')]
-    private Collection $dishes;
+    // #[ORM\ManyToMany(targetEntity: Dish::class, mappedBy: 'tags')]
+    // private Collection $dishes;
 
-    public function __construct()
-    {
-        $this->dishes = new ArrayCollection();
-    }
+    // public function __construct()
+    // {
+    //     $this->dishes = new ArrayCollection();
+    // }
 
     public function getId(): ?int
     {
@@ -70,30 +70,30 @@ class Tag implements Translatable
         $this->locale = $locale;
     }
 
-    /**
-     * @return Collection<int, Dish>
-     */
-    public function getDishes(): Collection
-    {
-        return $this->dishes;
-    }
+    // /**
+    //  * @return Collection<int, Dish>
+    //  */
+    // public function getDishes(): Collection
+    // {
+    //     return $this->dishes;
+    // }
 
-    public function addDish(Dish $dish): self
-    {
-        if (!$this->dishes->contains($dish)) {
-            $this->dishes->add($dish);
-            $dish->addTag($this);
-        }
+    // public function addDish(Dish $dish): self
+    // {
+    //     if (!$this->dishes->contains($dish)) {
+    //         $this->dishes->add($dish);
+    //         $dish->addTag($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeDish(Dish $dish): self
-    {
-        if ($this->dishes->removeElement($dish)) {
-            $dish->removeTag($this);
-        }
+    // public function removeDish(Dish $dish): self
+    // {
+    //     if ($this->dishes->removeElement($dish)) {
+    //         $dish->removeTag($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 }

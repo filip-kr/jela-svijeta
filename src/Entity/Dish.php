@@ -31,31 +31,31 @@ class Dish implements Translatable
     private ?string $status = null;
 
     #[ORM\Column]
-    private ?\DateTime $created_at = null;
+    private ?\DateTime $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updated_at = null;
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $deleted_at = null;
+    private ?\DateTime $deletedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'dishes')]
     private ?Category $category = null;
 
-    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'dishes')]
-    private Collection $tags;
+    // #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'dishes')]
+    // private Collection $tags;
 
-    #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'dishes')]
-    private Collection $ingredients;
+    // #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'dishes')]
+    // private Collection $ingredients;
 
     #[Gedmo\Locale]
     private $locale;
 
-    public function __construct()
-    {
-        $this->tags = new ArrayCollection();
-        $this->ingredients = new ArrayCollection();
-    }
+    // public function __construct()
+    // {
+    //     $this->tags = new ArrayCollection();
+    //     $this->ingredients = new ArrayCollection();
+    // }
 
     public function getId(): ?int
     {
@@ -100,36 +100,36 @@ class Dish implements Translatable
 
     public function getCreatedAt(): ?\DateTime
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $created_at): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTime
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updated_at): self
+    public function setUpdatedAt(?\DateTime $updatedAt): self
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
     public function getDeletedAt(): ?\DateTime
     {
-        return $this->deleted_at;
+        return $this->deletedAt;
     }
 
-    public function setDeletedAt(?\DateTime $deleted_at): self
+    public function setDeletedAt(?\DateTime $deletedAt): self
     {
-        $this->deleted_at = $deleted_at;
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }
@@ -146,53 +146,53 @@ class Dish implements Translatable
         return $this;
     }
 
-    /**
-     * @return Collection<int, Tag>
-     */
-    public function getTags(): Collection
-    {
-        return $this->tags;
-    }
+    // /**
+    //  * @return Collection<int, Tag>
+    //  */
+    // public function getTags(): Collection
+    // {
+    //     return $this->tags;
+    // }
 
-    public function addTag(Tag $tag): self
-    {
-        if (!$this->tags->contains($tag)) {
-            $this->tags->add($tag);
-        }
+    // public function addTag(Tag $tag): self
+    // {
+    //     if (!$this->tags->contains($tag)) {
+    //         $this->tags->add($tag);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeTag(Tag $tag): self
-    {
-        $this->tags->removeElement($tag);
+    // public function removeTag(Tag $tag): self
+    // {
+    //     $this->tags->removeElement($tag);
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    /**
-     * @return Collection<int, Ingredient>
-     */
-    public function getIngredients(): Collection
-    {
-        return $this->ingredients;
-    }
+    // /**
+    //  * @return Collection<int, Ingredient>
+    //  */
+    // public function getIngredients(): Collection
+    // {
+    //     return $this->ingredients;
+    // }
 
-    public function addIngredient(Ingredient $ingredient): self
-    {
-        if (!$this->ingredients->contains($ingredient)) {
-            $this->ingredients->add($ingredient);
-        }
+    // public function addIngredient(Ingredient $ingredient): self
+    // {
+    //     if (!$this->ingredients->contains($ingredient)) {
+    //         $this->ingredients->add($ingredient);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeIngredient(Ingredient $ingredient): self
-    {
-        $this->ingredients->removeElement($ingredient);
+    // public function removeIngredient(Ingredient $ingredient): self
+    // {
+    //     $this->ingredients->removeElement($ingredient);
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function setTranslatableLocale($locale)
     {

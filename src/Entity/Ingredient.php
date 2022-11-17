@@ -28,13 +28,13 @@ class Ingredient implements Translatable
     #[Gedmo\Locale]
     private $locale;
 
-    #[ORM\ManyToMany(targetEntity: Dish::class, mappedBy: 'ingredients')]
-    private Collection $dishes;
+    // #[ORM\ManyToMany(targetEntity: Dish::class, mappedBy: 'ingredients')]
+    // private Collection $dishes;
 
-    public function __construct()
-    {
-        $this->dishes = new ArrayCollection();
-    }
+    // public function __construct()
+    // {
+    //     $this->dishes = new ArrayCollection();
+    // }
 
     public function getId(): ?int
     {
@@ -70,30 +70,30 @@ class Ingredient implements Translatable
         $this->locale = $locale;
     }
 
-    /**
-     * @return Collection<int, Dish>
-     */
-    public function getDishes(): Collection
-    {
-        return $this->dishes;
-    }
+    // /**
+    //  * @return Collection<int, Dish>
+    //  */
+    // public function getDishes(): Collection
+    // {
+    //     return $this->dishes;
+    // }
 
-    public function addDish(Dish $dish): self
-    {
-        if (!$this->dishes->contains($dish)) {
-            $this->dishes->add($dish);
-            $dish->addIngredient($this);
-        }
+    // public function addDish(Dish $dish): self
+    // {
+    //     if (!$this->dishes->contains($dish)) {
+    //         $this->dishes->add($dish);
+    //         $dish->addIngredient($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeDish(Dish $dish): self
-    {
-        if ($this->dishes->removeElement($dish)) {
-            $dish->removeIngredient($this);
-        }
+    // public function removeDish(Dish $dish): self
+    // {
+    //     if ($this->dishes->removeElement($dish)) {
+    //         $dish->removeIngredient($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 }
