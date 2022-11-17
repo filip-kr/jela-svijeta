@@ -37,7 +37,7 @@ class Dish implements Translatable
     #[ORM\Column(nullable: true)]
     private ?\DateTime $deletedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'dishes')]
+    #[ORM\ManyToOne(inversedBy: 'dishes', fetch: 'EAGER')]
     private ?Category $category = null;
 
     #[Gedmo\Locale]

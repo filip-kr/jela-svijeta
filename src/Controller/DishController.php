@@ -7,8 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
-use Gedmo\Translatable\Entity\Translation;
+use App\Service\ApiService;
 
 #[Route(
     path: '/api',
@@ -21,47 +20,21 @@ class DishController extends AbstractController
     public function __invoke(
         Request $request,
         DishRepository $dishRepository,
-        EntityManagerInterface $entityManager
+        ApiService $apiService
     ): JsonResponse 
     {
-        if (!$this->isLanguageSetAndValid($request)) {
+        if (!$this->isLanguageSet($request)) {
             return $this->json('lang parameter is required: \'en\' for English OR \'ja\' for Japanese');
         }
 
-        $data = [];
-        $dishes = $dishRepository->findByParameters($request->query->all());
-
-        if ($request->query->get('lang') == 'en') {
-            foreach ($dishes as $dish) {
-                $data[] = [
-                    'id' => $dish->getId(),
-                    'title' => $dish->getTitle(),
-                    'description' => $dish->getDescription(),
-                    'status' => $dish->getStatus()
-                ];
-            }
-        }
-
-        if ($request->query->get('lang') == 'ja') {
-            $translationsRepository = $entityManager->getRepository(Translation::class);
-
-            foreach ($dishes as $dish) {
-                $dish->setTranslatableLocale('ja');
-                $translations = $translationsRepository->findTranslations($dish);
-
-                $data[] = [
-                    'id' => $dish->getId(),
-                    'title' => $translations['ja']['title'],
-                    'description' => $translations['ja']['description'],
-                    'status' => $dish->getStatus()
-                ];
-            }
-        }
+        $params = $request->query->all();
+        $dishes = $dishRepository->findByParameters($params);
+        $data = $apiService->formatData($dishes, $params);
 
         return $this->json($data);
     }
 
-    private function isLanguageSetAndValid($request): bool
+    private function isLanguageSet($request): bool
     {
         if (!$request->query->get('lang')) {
             return false;
