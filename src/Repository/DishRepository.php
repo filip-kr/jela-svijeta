@@ -42,7 +42,8 @@ class DishRepository extends ServiceEntityRepository
     public function findByParameters(array $params): array
     {
         $query = $this->createQueryBuilder('d')
-            ->select('d');
+            ->select('d')
+            ->innerJoin('App\Entity\Category', 'c', 'WITH', 'd.category = c.id');
 
         if (isset($params['diff_time'])) {
             $date = date('Y-m-d H:i:s', $params['diff_time']);
