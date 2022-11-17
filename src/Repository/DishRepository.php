@@ -45,47 +45,61 @@ class DishRepository extends ServiceEntityRepository
             ->select('d');
 
         if (isset($params['diff_time'])) {
-
+            $date = date('Y-m-d H:i:s', $params['diff_time']);
+            $query->andWhere('d.createdAt > :date')
+                ->orWhere('d.updatedAt > :date')
+                ->orWhere('d.deletedAt > :date')
+                ->setParameter('date', $date);
+        } else {
+            $query->andWhere('d.status = \'created\'');
         }
 
         if (isset($params['category'])) {
-            $query->andWhere('d.category = :val')
-            ->setParameter('val', $params['category']);
+            if ($params['category'] == 'NULL') {
+                $query->andWhere('d.category IS NULL');
+            } elseif ($params['category'] == '!NULL') {
+                $query->andWhere('d.category IS NOT NULL');
+            } else {
+                $query->andWhere('d.category = :category')
+                    ->setParameter('category', $params['category']);
+            }
         }
 
-        // if (isset($params['tags'])) {
-        //     $query->innerJoin('d.tags', 't')
-        //         ->andWhere('t.id = (:val)')
-        //         ->setParameter('val', $params['tags']);
-        // }
+        if (isset($params['tags'])) {
+            $tags = explode(',', $params['tags']);
+
+            $query->innerJoin('App\Entity\DishTag', 'dt', 'WITH', 'dt.dishId = d.id')
+                ->andWhere('dt.tagId IN (:tags)')
+                ->setParameter('tags', $tags);
+        }
 
         // dd($query->getQuery());
         return $query->getQuery()
             ->getResult();
     }
 
-//    /**
-//     * @return Dish[] Returns an array of Dish objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('d.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    //    /**
+    //     * @return Dish[] Returns an array of Dish objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('d')
+    //            ->andWhere('d.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('d.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
 
-//    public function findOneBySomeField($value): ?Dish
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    //    public function findOneBySomeField($value): ?Dish
+    //    {
+    //        return $this->createQueryBuilder('d')
+    //            ->andWhere('d.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }
