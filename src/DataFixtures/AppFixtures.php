@@ -25,14 +25,14 @@ class AppFixtures extends Fixture
         $this->translator = $entityManager->getRepository(Translation::class);
         $this->faker = Factory::create();
 
-        $this->foodFakerEn = Factory::create()
-            ->addProvider(new EnglishRestaurant($this->foodFakerEn));
+        $this->foodFakerEn = Factory::create();
+        $this->foodFakerEn->addProvider(new EnglishRestaurant($this->foodFakerEn));
 
-        $this->foodFakerJap = Factory::create()
-            ->addProvider(new JapaneseRestaurant($this->foodFakerJap));
+        $this->foodFakerJap = Factory::create();
+        $this->foodFakerJap->addProvider(new JapaneseRestaurant($this->foodFakerJap));
 
-        $this->kanaNameFaker = Factory::create()
-            ->addProvider(new Person($this->kanaNameFaker));
+        $this->kanaNameFaker = Factory::create();
+        $this->kanaNameFaker->addProvider(new Person($this->kanaNameFaker));
     }
 
     public function load(ObjectManager $manager): void
@@ -110,21 +110,19 @@ class AppFixtures extends Fixture
             $dish->setCreatedAt($this->faker->dateTime());
             $dish->setCategory($categories[rand(0, 3)]);
 
-            if ($dish->getStatus() == 'created') {
-                if (rand(1, 100) > 50) {
-                    $dish->setUpdatedAt($this->faker->dateTime());
-                }
-            }
-
             if ($dish->getStatus() == 'modified') {
-                $dish->setUpdatedAt($this->faker->dateTime());
+                $dish->setUpdatedAt($this->faker->dateTimeBetween($dish->getCreatedAt(), 'now'));
             }
 
             if ($dish->getStatus() == 'deleted') {
-                $dish->setDeletedAt($this->faker->dateTime());
-
                 if (rand(1, 100) > 50) {
-                    $dish->setUpdatedAt($this->faker->dateTime());
+                    $dish->setUpdatedAt($this->faker->dateTimeBetween($dish->getCreatedAt(), 'now'));
+                }
+
+                if ($dish->getUpdatedAt()) {
+                    $dish->setDeletedAt($this->faker->dateTimeBetween($dish->getUpdatedAt(), 'now'));
+                } else {
+                    $dish->setDeletedAt($this->faker->dateTimeBetween($dish->getCreatedAt(), 'now'));
                 }
             }
 
