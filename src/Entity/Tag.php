@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\TagRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Translatable\Translatable;
@@ -27,14 +25,6 @@ class Tag implements Translatable
 
     #[Gedmo\Locale]
     private $locale;
-
-    // #[ORM\ManyToMany(targetEntity: Dish::class, mappedBy: 'tags')]
-    // private Collection $dishes;
-
-    // public function __construct()
-    // {
-    //     $this->dishes = new ArrayCollection();
-    // }
 
     public function getId(): ?int
     {
@@ -69,31 +59,4 @@ class Tag implements Translatable
     {
         $this->locale = $locale;
     }
-
-    // /**
-    //  * @return Collection<int, Dish>
-    //  */
-    // public function getDishes(): Collection
-    // {
-    //     return $this->dishes;
-    // }
-
-    // public function addDish(Dish $dish): self
-    // {
-    //     if (!$this->dishes->contains($dish)) {
-    //         $this->dishes->add($dish);
-    //         $dish->addTag($this);
-    //     }
-
-    //     return $this;
-    // }
-
-    // public function removeDish(Dish $dish): self
-    // {
-    //     if ($this->dishes->removeElement($dish)) {
-    //         $dish->removeTag($this);
-    //     }
-
-    //     return $this;
-    // }
 }

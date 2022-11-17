@@ -14,6 +14,9 @@ use App\Entity\DishTag;
 use App\Entity\DishIngredient;
 use Gedmo\Translatable\Entity\Translation;
 use Faker\Factory;
+use FakerRestaurant\Provider\en_US\Restaurant as EnglishRestaurant;
+use FakerRestaurant\Provider\ja_JP\Restaurant as JapaneseRestaurant;
+use Faker\Provider\ja_JP\Person;
 
 class AppFixtures extends Fixture
 {
@@ -22,14 +25,14 @@ class AppFixtures extends Fixture
         $this->translator = $entityManager->getRepository(Translation::class);
         $this->faker = Factory::create();
 
-        $this->foodFakerEn = Factory::create();
-        $this->foodFakerEn->addProvider(new \FakerRestaurant\Provider\en_US\Restaurant($this->foodFakerEn));
+        $this->foodFakerEn = Factory::create()
+            ->addProvider(new EnglishRestaurant($this->foodFakerEn));
 
-        $this->foodFakerJap = Factory::create();
-        $this->foodFakerJap->addProvider(new \FakerRestaurant\Provider\ja_JP\Restaurant($this->foodFakerJap));
+        $this->foodFakerJap = Factory::create()
+            ->addProvider(new JapaneseRestaurant($this->foodFakerJap));
 
-        $this->kanaNameFaker = Factory::create();
-        $this->kanaNameFaker->addProvider(new \Faker\Provider\ja_JP\Person($this->kanaNameFaker));
+        $this->kanaNameFaker = Factory::create()
+            ->addProvider(new Person($this->kanaNameFaker));
     }
 
     public function load(ObjectManager $manager): void
@@ -144,7 +147,7 @@ class AppFixtures extends Fixture
         $existingTags = [];
         $existingIngredients = [];
         foreach ($dishes as $dish) {
-            
+
             for ($i = 0; $i < rand(1, 6); $i++) {
                 $randomSelector = rand(0, 99);
                 $tag = $tags[$randomSelector]->getId();
