@@ -10,6 +10,8 @@ use App\Entity\Dish;
 use App\Entity\Ingredient;
 use App\Entity\Language;
 use App\Entity\Tag;
+use App\Entity\DishTag;
+use App\Entity\DishIngredient;
 use Gedmo\Translatable\Entity\Translation;
 use Faker\Factory;
 
@@ -94,9 +96,11 @@ class AppFixtures extends Fixture
         $categories = [$appetizer, $mainCourse, $dessert, NULL];
 
         // Dishes
+        $dishes = [];
         $statuses = ['created', 'modified', 'deleted'];
         for ($i = 0; $i < 60; $i++) {
             $dish = new Dish;
+
             $dish->setTitle($this->foodFakerEn->foodName());
             $dish->setDescription($this->faker->sentence());
             $dish->setStatus($statuses[rand(0, 2)]);
@@ -121,18 +125,51 @@ class AppFixtures extends Fixture
                 }
             }
 
-            for ($j = 0; $j < rand(2, 12); $j++) {
-                $dish->addIngredient($ingredients[rand(0, 99)]);
-            }
-
-            for ($k = 0; $k < rand(1, 6); $k++) {
-                $dish->addTag($tags[rand(0, 99)]);
-            }
-
-            $this->translator->translate($dish, 'title', 'ja', $this->foodFakerJap->foodName());
+            $this->translator->translate(
+                $dish,
+                'title',
+                'ja',
+                $this->foodFakerJap->foodName()
+            );
             $this->translator->translate($dish, 'description', 'ja', $this->faker->sentence());
 
             $manager->persist($dish);
+
+            $dishes[] = $dish;
+        }
+
+        $manager->flush();
+
+        // DishTag & DishIngredient
+        $existingTags = [];
+        $existingIngredients = [];
+        foreach ($dishes as $dish) {
+            
+            for ($i = 0; $i < rand(1, 6); $i++) {
+                $randomSelector = rand(0, 99);
+                $tag = $tags[$randomSelector]->getId();
+
+                if (!in_array($tag, $existingTags)) {
+                    $dishTag = new DishTag;
+                    $dishTag->setDishId($dish->getId());
+                    $dishTag->setTagId($tag);
+                    $existingTags[] = $tag;
+                    $manager->persist($dishTag);
+                }
+            }
+
+            for ($i = 0; $i < rand(4, 12); $i++) {
+                $randomSelector = rand(0, 99);
+                $ingredient = $ingredients[$randomSelector]->getId();
+
+                if (!in_array($ingredient, $existingIngredients)) {
+                    $dishIngredient = new DishIngredient;
+                    $dishIngredient->setDishId($dish->getId());
+                    $dishIngredient->setIngredientId($ingredient);
+                    $existingIngredients[] = $ingredient;
+                    $manager->persist($dishIngredient);
+                }
+            }
         }
 
         $manager->flush();
