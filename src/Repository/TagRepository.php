@@ -39,28 +39,15 @@ class TagRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Tag[] Returns an array of Tag objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findByDishId(array $dish): array
+    {
+        $query = $this->createQueryBuilder('t')
+            ->select('t, dt.dishId')
+            ->innerJoin('App\Entity\Dishtag', 'dt', 'WITH', 'dt.tagId = t.id')
+            ->andWhere('dt.dishId IN (:dishId)')
+            ->setParameter('dishId', $dish);
 
-//    public function findOneBySomeField($value): ?Tag
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return $query->getQuery()
+            ->getResult();
+    }
 }

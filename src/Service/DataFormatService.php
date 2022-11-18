@@ -52,6 +52,10 @@ final class DataFormatService
             $this->setCategories($isJapanese);
         }
 
+        if (in_array('tags', $with)) {
+            $this->setTags($isJapanese);
+        }
+
         if (in_array('ingredients', $with)) {
             $this->setIngredients($isJapanese);
         }
@@ -87,6 +91,48 @@ final class DataFormatService
                     'slug' => $this->rawData[$i]->getCategory()->getSlug()
                 ]
             );
+        }
+    }
+
+    private function getTags(): array
+    {
+        $dishIds = [];
+
+        for ($i = 0; $i < count($this->formattedData); $i++) {
+            $dishIds[$i] = $this->formattedData[$i]['id'];
+        }
+
+        return $this->tagRepository->findByDishId($dishIds);
+    }
+
+    private function setTags($isJapanese): void
+    {
+        $dishTags = $this->getTags();
+        foreach ($dishTags as $dt) {
+            $dt[0]->dishId = $dt['dishId'];
+            array_push($dishTags, $dt[0]);
+            array_shift($dishTags);
+        }
+
+        for ($i = 0; $i < count($this->rawData); $i++) {
+            $this->formattedData[$i]['tags'] = [];
+
+            foreach ($dishTags as $dt) {
+                if ($isJapanese) {
+                    $tagTranslation = $this->languageService->getOneTranslation($dt);
+                }
+
+                if ($this->formattedData[$i]['id'] == $dt->dishId) {
+                    array_push(
+                        $this->formattedData[$i]['tags'],
+                        [
+                            'id' => $dt->getId(),
+                            'title' => $isJapanese ? $tagTranslation['ja']['title'] : $dt->getTitle(),
+                            'slug' => $dt->getSlug()
+                        ]
+                    );
+                }
+            }
         }
     }
 
