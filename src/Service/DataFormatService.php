@@ -25,7 +25,10 @@ final class DataFormatService
         $isJapanese = $this->languageService->isLanguageJapanese($params);
 
         if ($isJapanese) {
-            $dishTranslations = $this->languageService->getTranslations($data);
+            $dishTranslations = [];
+            for ($i = 0; $i < count($data); $i++) {
+                $dishTranslations[$i] = $this->languageService->getTranslation($data[$i]);
+            }
         }
 
         for ($i = 0; $i < count($data); $i++) {
@@ -39,6 +42,10 @@ final class DataFormatService
 
         if (isset($params['with'])) {
             $this->setAdditionalRequestData($params, $isJapanese);
+        }
+
+        if (isset($params['tags'])) {
+            $this->filterOutDishesWithMissingTags(explode(',', $params['tags']));
         }
 
         return $this->formattedData;
@@ -77,7 +84,12 @@ final class DataFormatService
         $dishCategories = $this->getCategories();
 
         if ($isJapanese) {
-            $categoryTranslations = $this->languageService->getTranslations($dishCategories);
+            $categoryTranslations = [];
+            for ($i = 0; $i < count($dishCategories); $i++) {
+                if ($dishCategories[$i]) {
+                    $categoryTranslations[$i] = $this->languageService->getTranslation($dishCategories[$i]);
+                }
+            }
         }
 
         for ($i = 0; $i < count($this->rawData); $i++) {
@@ -123,7 +135,7 @@ final class DataFormatService
 
             foreach ($dishTags as $dt) {
                 if ($isJapanese) {
-                    $tagTranslation = $this->languageService->getOneTranslation($dt);
+                    $tagTranslation = $this->languageService->getTranslation($dt);
                 }
 
                 if ($this->formattedData[$i]['id'] == $dt->dishId) {
@@ -165,7 +177,7 @@ final class DataFormatService
 
             foreach ($dishIngredients as $di) {
                 if ($isJapanese) {
-                    $ingredientTranslation = $this->languageService->getOneTranslation($di);
+                    $ingredientTranslation = $this->languageService->getTranslation($di);
                 }
 
                 if ($this->formattedData[$i]['id'] == $di->dishId) {
@@ -180,5 +192,22 @@ final class DataFormatService
                 }
             }
         }
+    }
+
+    private function filterOutDishesWithMissingTags($tags): void
+    {
+        $filteredDishes = [];
+        foreach ($this->formattedData as $fd) {
+            $fdTags = [];
+            for ($i = 0; $i < count($fd['tags']); $i++) {
+                $fdTags[$i] = $fd['tags'][$i]['id'];
+            }
+
+            if (count(array_intersect($fdTags, $tags)) == count($tags)) {
+                $filteredDishes[] = $fd;
+            }
+        }
+
+        $this->formattedData = $filteredDishes;
     }
 }
