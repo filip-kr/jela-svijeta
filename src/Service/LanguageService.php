@@ -31,15 +31,20 @@ final class LanguageService
         return false;
     }
 
-    public function getTranslations($data): array
+    public function getTranslations($array): array
     {
         $translations = [];
 
-        for ($i = 0; $i < count($data); $i++) {
-            $data[$i]->setTranslatableLocale('ja');
-            $translations[$i] = $this->translationsRepository->findTranslations($data[$i]);
+        for ($i = 0; $i < count($array); $i++) {
+            $array[$i]->setTranslatableLocale('ja');
+            $translations[$i] = $this->translationsRepository->findTranslations($array[$i]);
         }
 
         return $translations;
+    }
+
+    public function getOneTranslation($object): array
+    {
+        return $this->translationsRepository->findTranslations($object);
     }
 }

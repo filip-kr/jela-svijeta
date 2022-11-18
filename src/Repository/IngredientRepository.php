@@ -42,13 +42,11 @@ class IngredientRepository extends ServiceEntityRepository
     public function findByDishId(array $dish): array
     {
         $query = $this->createQueryBuilder('i')
-            ->select('i, di.dishId as dishId')
+            ->select('i, di.dishId')
             ->innerJoin('App\Entity\DishIngredient', 'di', 'WITH', 'di.ingredientId = i.id')
             ->andWhere('di.dishId IN (:dishId)')
             ->setParameter('dishId', $dish);
 
-            // dd($query->getQuery());
-            // dd($query->getQuery()->getResult());
         return $query->getQuery()
             ->getResult();
     }

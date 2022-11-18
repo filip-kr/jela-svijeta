@@ -104,22 +104,31 @@ final class DataFormatService
     private function setIngredients($isJapanese): void
     {
         $dishIngredients = $this->getIngredients();
-
-        if ($isJapanese) {
-            $ingredientTranslations = $this->languageService->getTranslations($dishIngredients);
+        foreach ($dishIngredients as $di) {
+            $di[0]->dishId = $di['dishId'];
+            array_push($dishIngredients, $di[0]);
+            array_shift($dishIngredients);
         }
 
         for ($i = 0; $i < count($this->rawData); $i++) {
             $this->formattedData[$i]['ingredients'] = [];
 
-            // array_push(
-            //     $this->formattedData[$i]['ingredients'],
-            //     [
-            //         'id' => $dishIngredients[$i]->getId(),
-            //         'title' => $isJapanese ? $ingredientTranslations[$i]['ja']['title'] : $dishIngredients[$i]->getTitle(),
-            //         'slug' => $dishIngredients[$i]->getSlug()
-            //     ]
-            // );
+            foreach ($dishIngredients as $di) {
+                if ($isJapanese) {
+                    $ingredientTranslation = $this->languageService->getOneTranslation($di);
+                }
+
+                if ($this->formattedData[$i]['id'] == $di->dishId) {
+                    array_push(
+                        $this->formattedData[$i]['ingredients'],
+                        [
+                            'id' => $di->getId(),
+                            'title' => $isJapanese ? $ingredientTranslation['ja']['title'] : $di->getTitle(),
+                            'slug' => $di->getSlug()
+                        ]
+                    );
+                }
+            }
         }
     }
 }
