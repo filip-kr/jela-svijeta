@@ -2,13 +2,21 @@
 
 namespace App\Service;
 
+use App\Repository\IngredientRepository;
+use App\Repository\TagRepository;
+
 final class DataFormatService
 {
-    public function __construct(LanguageService $languageService)
-    {
+    public function __construct(
+        LanguageService $languageService,
+        IngredientRepository $ingredientRepository,
+        TagRepository $tagRepository
+    ) {
         $this->rawData = [];
         $this->formattedData = [];
         $this->languageService = $languageService;
+        $this->ingredientRepository = $ingredientRepository;
+        $this->tagRepository = $tagRepository;
     }
 
     public function formatData($data, $params): array
@@ -43,11 +51,26 @@ final class DataFormatService
         if (in_array('category', $with)) {
             $this->setCategories($isJapanese);
         }
+
+        if (in_array('ingredients', $with)) {
+            $this->setIngredients($isJapanese);
+        }
+    }
+
+    private function getCategories(): array
+    {
+        $dishCategories = [];
+
+        for ($i = 0; $i < count($this->rawData); $i++) {
+            $dishCategories[$i] = $this->rawData[$i]->getCategory();
+        }
+
+        return $dishCategories;
     }
 
     private function setCategories($isJapanese): void
     {
-        $dishCategories = $this->getCategories($this->rawData);
+        $dishCategories = $this->getCategories();
 
         if ($isJapanese) {
             $categoryTranslations = $this->languageService->getTranslations($dishCategories);
@@ -67,14 +90,36 @@ final class DataFormatService
         }
     }
 
-    private function getCategories($data): array
+    private function getIngredients(): array
     {
-        $dishCategories = [];
+        $dishIds = [];
 
-        for ($i = 0; $i < count($data); $i++) {
-            $dishCategories[$i] = $data[$i]->getCategory();
+        for ($i = 0; $i < count($this->formattedData); $i++) {
+            $dishIds[$i] = $this->formattedData[$i]['id'];
         }
 
-        return $dishCategories;
+        return $this->ingredientRepository->findByDishId($dishIds);
+    }
+
+    private function setIngredients($isJapanese): void
+    {
+        $dishIngredients = $this->getIngredients();
+
+        if ($isJapanese) {
+            $ingredientTranslations = $this->languageService->getTranslations($dishIngredients);
+        }
+
+        for ($i = 0; $i < count($this->rawData); $i++) {
+            $this->formattedData[$i]['ingredients'] = [];
+
+            // array_push(
+            //     $this->formattedData[$i]['ingredients'],
+            //     [
+            //         'id' => $dishIngredients[$i]->getId(),
+            //         'title' => $isJapanese ? $ingredientTranslations[$i]['ja']['title'] : $dishIngredients[$i]->getTitle(),
+            //         'slug' => $dishIngredients[$i]->getSlug()
+            //     ]
+            // );
+        }
     }
 }

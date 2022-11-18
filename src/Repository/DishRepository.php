@@ -43,7 +43,9 @@ class DishRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('d')
             ->select('d')
-            ->innerJoin('App\Entity\Category', 'c', 'WITH', 'd.category = c.id');
+            ->innerJoin('App\Entity\Category', 'c', 'WITH', 'd.category = c.id')
+            ->innerJoin('App\Entity\DishTag', 'dt', 'WITH', 'dt.dishId = d.id')
+            ->innerJoin('App\Entity\DishIngredient', 'di', 'WITH', 'di.dishId = d.id');
 
         if (isset($params['diff_time'])) {
             $date = date('Y-m-d H:i:s', $params['diff_time']);
@@ -68,12 +70,10 @@ class DishRepository extends ServiceEntityRepository
 
         if (isset($params['tags'])) {
             $tags = explode(',', $params['tags']);
-            $query->innerJoin('App\Entity\DishTag', 'dt', 'WITH', 'dt.dishId = d.id')
-                ->andWhere('dt.tagId IN (:tags)')
+            $query->andWhere('dt.tagId IN (:tags)')
                 ->setParameter('tags', $tags);
         }
 
-        // dd($query->getQuery());
         return $query->getQuery()
             ->getResult();
     }
