@@ -83,14 +83,18 @@ final class DataFormatService
         for ($i = 0; $i < count($this->rawData); $i++) {
             $this->formattedData[$i]['category'] = [];
 
-            array_push(
-                $this->formattedData[$i]['category'],
-                [
-                    'id' => $this->rawData[$i]->getCategory()->getId(),
-                    'title' => $isJapanese ? $categoryTranslations[$i]['ja']['title'] : $this->rawData[$i]->getCategory()->getTitle(),
-                    'slug' => $this->rawData[$i]->getCategory()->getSlug()
-                ]
-            );
+            if ($this->rawData[$i]->getCategory()) {
+                array_push(
+                    $this->formattedData[$i]['category'],
+                    [
+                        'id' => $this->rawData[$i]->getCategory()->getId(),
+                        'title' => $isJapanese ? $categoryTranslations[$i]['ja']['title'] : $this->rawData[$i]->getCategory()->getTitle(),
+                        'slug' => $this->rawData[$i]->getCategory()->getSlug()
+                    ]
+                );
+            } else {
+                $this->formattedData[$i]['category'] = 'NULL';
+            }
         }
     }
 

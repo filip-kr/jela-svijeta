@@ -43,7 +43,7 @@ class DishRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('d')
             ->select('d')
-            ->innerJoin('App\Entity\Category', 'c', 'WITH', 'd.category = c.id')
+            ->leftJoin('App\Entity\Category', 'c', 'WITH', 'd.category = c.id')
             ->innerJoin('App\Entity\DishTag', 'dt', 'WITH', 'dt.dishId = d.id')
             ->innerJoin('App\Entity\DishIngredient', 'di', 'WITH', 'di.dishId = d.id');
 
@@ -56,6 +56,8 @@ class DishRepository extends ServiceEntityRepository
         } else {
             $query->andWhere('d.status = \'created\'');
         }
+
+        // dd($params['category']);
 
         if (isset($params['category'])) {
             if ($params['category'] == 'NULL') {
