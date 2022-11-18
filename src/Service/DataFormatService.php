@@ -51,6 +51,16 @@ final class DataFormatService
         return $this->formattedData;
     }
 
+    public function formatPaginatedData($data)
+    {
+        $paginatedData = [];
+        foreach ($data as $d) {
+            $paginatedData[] = $d;
+        }
+
+        return $paginatedData;
+    }
+
     private function setAdditionalRequestData($params, $isJapanese): void
     {
         $with = explode(',', $params['with']);

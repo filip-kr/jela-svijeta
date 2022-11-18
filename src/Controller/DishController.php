@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\DataFormatService;
 use App\Service\LanguageService;
+use App\Service\PaginationService;
 
 #[Route(
     path: '/api',
@@ -22,17 +23,25 @@ class DishController extends AbstractController
         Request $request,
         DishRepository $dishRepository,
         DataFormatService $dataFormatService,
-        LanguageService $languageService
-    ): JsonResponse 
-    {
+        LanguageService $languageService,
+        PaginationService $paginator
+    ): JsonResponse {
         if (!$languageService->isLanguageSet($request)) {
             return $this->json('lang parameter is required: \'en\' for English OR \'ja\' for Japanese');
         }
 
         $params = $request->query->all();
         $dishes = $dishRepository->findByParameters($params);
-        $data = $dataFormatService->formatData($dishes, $params);
+        $formattedData = $dataFormatService->formatData($dishes, $params);
 
-        return $this->json($data);
+        $paginatedData = $paginator->paginate(
+            $formattedData,
+            isset($params['page']) ? $params['page'] : 1,
+            isset($params['per_page']) ? $params['per_page'] : 10
+        );
+
+        $paginatedData = $dataFormatService->formatPaginatedData($paginatedData);
+
+        return $this->json($paginatedData);
     }
 }

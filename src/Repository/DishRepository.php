@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Dish;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -44,8 +46,8 @@ class DishRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('d')
             ->select('d')
             ->leftJoin('d.category', 'c')
-            ->innerJoin('App\Entity\DishTag', 'dt', 'WITH', 'dt.dishId = d.id')
-            ->innerJoin('App\Entity\DishIngredient', 'di', 'WITH', 'di.dishId = d.id');
+            ->leftJoin('App\Entity\DishTag', 'dt', 'WITH', 'dt.dishId = d.id')
+            ->leftJoin('App\Entity\DishIngredient', 'di', 'WITH', 'di.dishId = d.id');
 
         if (isset($params['diff_time'])) {
             $date = date('Y-m-d H:i:s', $params['diff_time']);
