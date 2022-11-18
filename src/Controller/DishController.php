@@ -25,7 +25,8 @@ class DishController extends AbstractController
         DataFormatService $dataFormatService,
         LanguageService $languageService,
         PaginationService $paginator
-    ): JsonResponse {
+    ): JsonResponse 
+    {
         if (!$languageService->isLanguageSet($request)) {
             return $this->json('lang parameter is required: \'en\' for English OR \'ja\' for Japanese');
         }
@@ -33,6 +34,7 @@ class DishController extends AbstractController
         $params = $request->query->all();
         $dishes = $dishRepository->findByParameters($params);
         $formattedData = $dataFormatService->formatData($dishes, $params);
+        $totalItems = count($formattedData);
 
         $paginatedData = $paginator->paginate(
             $formattedData,
@@ -42,6 +44,13 @@ class DishController extends AbstractController
 
         $paginatedData = $dataFormatService->formatPaginatedData($paginatedData);
 
-        return $this->json($paginatedData);
+        $meta = $dataFormatService->getMetadata($params, $totalItems);
+        $links = $dataFormatService->getLinks($request, $params);
+
+        return $this->json([
+            'meta' => $meta,
+            'data' => $paginatedData,
+            'links' => $links
+        ]);
     }
 }
