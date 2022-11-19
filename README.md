@@ -72,14 +72,14 @@ shemu responsa je moguće promijeniti (proširiti) tako da se pošalje jedan ili
 ključnih riječi u parametar `with`, tada se u responsu na svakom objektu još mogu
 pojaviti i property `tags`, `category` ili/i `ingredients`.
 
-### 3. Lokalno postavljanje
+### 2. Lokalno postavljanje
 1. Klonirati repozitorij: `git clone git@github.com:filip-kr/jela-svijeta.git`
 2. Instalirati zavisnosti: `composer update`
 3. Kreirati bazu i korisnika sa svim ovlastima prema podacima iz `.env` datoteke: </br> `DATABASE_URL="mysql://js-filip-kr:js256@127.0.0.1:3306/jelasvijeta?serverVersion=mariadb-10.4.25&charset=utf8mb4"` </br> ili kreirati vlastitu i prilagoditi postavke. Obratiti pažnju na verziju baze i UTF8 charset radi prikaza japanskih znakova.
 4. Izvesti migraciju: `bin/console doctrine:migrations:migrate`
 5. Učitati fixtures-e: `bin/console doctrine:fixtures:load`
 
-### 4. Primjer
+### 3. Primjer
 Request: `http://localhost:8000/api?category=!NULL&diff_time=122590485&with=ingredients,tags,category&per_page=5&page=1&lang=ja` </br>
 
 [Response](https://github.com/filip-kr/jela-svijeta/files/10048086/Response.txt)
