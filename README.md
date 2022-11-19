@@ -8,6 +8,8 @@
 2. Lokalno postavljanje
 3. Primjer
 
+#
+
 ### 1. Opis
 Ova aplikacija se sastoji od baze jela, sastojaka, kategorija i tagova. </br>
 S obzirom da je aplikacija višejezična, jela, sastojci, kategorije i tagovi imaju
