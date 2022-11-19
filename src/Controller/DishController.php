@@ -34,22 +34,20 @@ class DishController extends AbstractController
         $params = $request->query->all();
         $dishes = $dishRepository->findByParameters($params);
         $formattedData = $dataFormatService->formatData($dishes, $params);
-        $totalItems = count($formattedData);
 
         $paginatedData = $paginator->paginate(
             $formattedData,
-            isset($params['page']) ? $params['page'] : 1,
-            isset($params['per_page']) ? $params['per_page'] : 10
+            isset($params['page']) ? $request->query->getInt('page') : 1,
+            isset($params['per_page']) ? $request->query->getInt('per_page') : 10
         );
 
-        $paginatedData = $dataFormatService->formatPaginatedData($paginatedData);
-
-        $meta = $dataFormatService->getMetadata($params, $totalItems);
-        $links = $dataFormatService->getLinks($request, $params);
+        $metadata = $paginator->getMetadata($paginatedData);
+        $paginatedAndFormattedData = $paginator->formatPaginatedData($paginatedData);
+        $links = $paginator->getLinks($request, $params, $metadata);
 
         return $this->json([
-            'meta' => $meta,
-            'data' => $paginatedData,
+            'meta' => $metadata,
+            'data' => $paginatedAndFormattedData,
             'links' => $links
         ]);
     }

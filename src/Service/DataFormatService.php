@@ -11,7 +11,8 @@ final class DataFormatService
         LanguageService $languageService,
         IngredientRepository $ingredientRepository,
         TagRepository $tagRepository
-    ) {
+    ) 
+    {
         $this->rawData = [];
         $this->formattedData = [];
         $this->languageService = $languageService;
@@ -49,40 +50,6 @@ final class DataFormatService
         }
 
         return $this->formattedData;
-    }
-
-    public function formatPaginatedData($data): array
-    {
-        $paginatedData = [];
-        foreach ($data as $d) {
-            $paginatedData[] = $d;
-        }
-
-        return $paginatedData;
-    }
-
-    public function getMetadata($params, $totalItems): array
-    {
-        return $metadata = [
-            'currentPage' => isset($params['page']) ? (int)$params['page'] : 1,
-            'totalItems' => $totalItems,
-            'itemsPerPage' => isset($params['per_page']) ? (int)$params['per_page'] : 10,
-            'totalPages' => isset($params['per_page']) ? ceil($totalItems / (int)$params['per_page']) : 1
-        ];
-    }
-
-    public function getLinks($request, $params): array
-    {
-        $uri = $request->request->get();
-        $currentPage = isset($params['page']) ? (int)$params['page'] : 1;
-        $nextPage = $currentPage + 1;
-        $previousPage = (string)$currentPage - 1;
-
-        // TODO
-        
-        return $links = [
-            'prev' => $uri . '&page=' . $previousPage
-        ];
     }
 
     private function setAdditionalRequestData($params, $isJapanese): void
