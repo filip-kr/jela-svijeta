@@ -50,6 +50,8 @@ class AppFixtures extends Fixture
         $japanese->setLocalName('日本語');
         $manager->persist($japanese);
 
+        $manager->flush();
+
         // Ingredients
         $ingredients = [];
         for ($i = 0; $i < 100; $i++) {
@@ -58,9 +60,11 @@ class AppFixtures extends Fixture
             $ingredient->setSlug($this->faker->slug(2));
 
             $this->translator->translate($ingredient, 'title', 'ja', $this->kanaNameFaker->firstKanaName());
-            $ingredients[$i] = $ingredient;
+            $ingredients[] = $ingredient;
             $manager->persist($ingredient);
         }
+
+        $manager->flush();
 
         // Tags
         $tags = [];
@@ -70,9 +74,11 @@ class AppFixtures extends Fixture
             $tag->setSlug($this->faker->slug(2));
 
             $this->translator->translate($tag, 'title', 'ja', $this->kanaNameFaker->firstKanaName());
-            $tags[$i] = $tag;
+            $tags[] = $tag;
             $manager->persist($tag);
         }
+
+        $manager->flush();
 
         // Categories
         // Appetizer
@@ -97,6 +103,7 @@ class AppFixtures extends Fixture
         $manager->persist($dessert);
 
         $categories = [$appetizer, $mainCourse, $dessert, NULL];
+        $manager->flush();
 
         // Dishes
         $dishes = [];
@@ -106,7 +113,7 @@ class AppFixtures extends Fixture
 
             $dish->setTitle($this->foodFakerEn->foodName());
             $dish->setDescription($this->faker->sentence());
-            $dish->setStatus($statuses[rand(0, 2)]);
+            $dish->setStatus(array_rand($statuses));
             $dish->setCreatedAt($this->faker->dateTime());
             $dish->setCategory($categories[rand(0, 3)]);
 
@@ -142,37 +149,31 @@ class AppFixtures extends Fixture
         $manager->flush();
 
         // DishTag & DishIngredient
-        $existingTags = [];
-        $existingIngredients = [];
         foreach ($dishes as $dish) {
 
             for ($i = 0; $i < rand(1, 6); $i++) {
                 $randomSelector = rand(0, 99);
                 $tag = $tags[$randomSelector]->getId();
 
-                if (!in_array($tag, $existingTags)) {
-                    $dishTag = new DishTag;
-                    $dishTag->setDishId($dish->getId());
-                    $dishTag->setTagId($tag);
-                    $existingTags[] = $tag;
-                    $manager->persist($dishTag);
-                }
+                $dishTag = new DishTag;
+                $dishTag->setDishId($dish->getId());
+                $dishTag->setTagId($tag);
+                $manager->persist($dishTag);
             }
+
+            $manager->flush();
 
             for ($i = 0; $i < rand(4, 12); $i++) {
                 $randomSelector = rand(0, 99);
                 $ingredient = $ingredients[$randomSelector]->getId();
 
-                if (!in_array($ingredient, $existingIngredients)) {
-                    $dishIngredient = new DishIngredient;
-                    $dishIngredient->setDishId($dish->getId());
-                    $dishIngredient->setIngredientId($ingredient);
-                    $existingIngredients[] = $ingredient;
-                    $manager->persist($dishIngredient);
-                }
+                $dishIngredient = new DishIngredient;
+                $dishIngredient->setDishId($dish->getId());
+                $dishIngredient->setIngredientId($ingredient);
+                $manager->persist($dishIngredient);
             }
-        }
 
-        $manager->flush();
+            $manager->flush();
+        }
     }
 }
