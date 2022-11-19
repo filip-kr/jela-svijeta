@@ -171,7 +171,7 @@ final class DataFormatService
             foreach ($dishIngredients as $di) {
                 if ($isJapanese) {
                     $ingredientTranslation = $this->ingredientRepository->findOneBy(['id' => $di['id']]);
-                    $ingredientTranslation = $this->languageService->getTranslation($di);
+                    $ingredientTranslation = $this->languageService->getTranslation($ingredientTranslation);
                 }
 
                 if ($this->formattedData[$i]['id'] == $di['dishId']) {
