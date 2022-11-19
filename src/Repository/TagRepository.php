@@ -47,7 +47,6 @@ class TagRepository extends ServiceEntityRepository
             ->andWhere('dt.dishId IN (:dishId)')
             ->setParameter('dishId', $dish);
 
-        // dd($query->getQuery()->getResult());
         return $query->getQuery()->getResult();
     }
 }

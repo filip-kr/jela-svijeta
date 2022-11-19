@@ -44,8 +44,8 @@ class IngredientRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('i')
             ->select('i.id, i.title, i.slug, di.dishId')
             ->innerJoin('App\Entity\DishIngredient', 'di', 'WITH', 'di.ingredientId = i.id')
-            ->andWhere('di.dishId = :dishId')
-            ->setParameter('dishId', [$dish]);
+            ->andWhere('di.dishId IN (:dishId)')
+            ->setParameter('dishId', $dish);
 
         return $query->getQuery()
             ->getResult();

@@ -20,6 +20,11 @@ use Faker\Provider\ja_JP\Person;
 
 class AppFixtures extends Fixture
 {
+    private $ingredients;
+    private $tags;
+    private $categories;
+    private $dishes;
+
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->translator = $entityManager->getRepository(Translation::class);
@@ -37,22 +42,32 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // Languages
-        // English
+        $this->loadLanguages($manager);
+        $this->loadIngredients($manager);
+        $this->loadTags($manager);
+        $this->loadCategories($manager);
+        $this->loadDishes($manager);
+        $this->loadDishTags($manager);
+        $this->loadDishIngredients($manager);
+    }
+
+    private function loadLanguages($manager)
+    {
         $english = new Language;
         $english->setLocale('en');
         $english->setLocalName('English');
         $manager->persist($english);
 
-        // Japanese
         $japanese = new Language;
         $japanese->setLocale('ja');
         $japanese->setLocalName('日本語');
         $manager->persist($japanese);
 
         $manager->flush();
+    }
 
-        // Ingredients
+    private function loadIngredients($manager)
+    {
         $ingredients = [];
         for ($i = 0; $i < 100; $i++) {
             $ingredient = new Ingredient;
@@ -64,9 +79,12 @@ class AppFixtures extends Fixture
             $manager->persist($ingredient);
         }
 
+        $this->ingredients = $ingredients;
         $manager->flush();
+    }
 
-        // Tags
+    private function loadTags($manager)
+    {
         $tags = [];
         for ($i = 0; $i < 100; $i++) {
             $tag = new Tag;
@@ -78,34 +96,36 @@ class AppFixtures extends Fixture
             $manager->persist($tag);
         }
 
+        $this->tags = $tags;
         $manager->flush();
+    }
 
-        // Categories
-        // Appetizer
+    private function loadCategories($manager)
+    {
         $appetizer = new Category;
         $appetizer->setTitle('Appetizer');
         $appetizer->setSlug($this->faker->slug(2));
         $this->translator->translate($appetizer, 'title', 'ja', 'オードブル');
         $manager->persist($appetizer);
 
-        // Main course
         $mainCourse = new Category;
         $mainCourse->setTitle('Main course');
         $mainCourse->setSlug($this->faker->slug(2));
         $this->translator->translate($mainCourse, 'title', 'ja', 'セコンド・ピアット');
         $manager->persist($mainCourse);
 
-        // Dessert
         $dessert = new Category;
         $dessert->setTitle('Dessert');
         $dessert->setSlug($this->faker->slug(2));
         $this->translator->translate($dessert, 'title', 'ja', 'デザート');
         $manager->persist($dessert);
 
-        $categories = [$appetizer, $mainCourse, $dessert, NULL];
+        $this->categories = [$appetizer, $mainCourse, $dessert, NULL];
         $manager->flush();
+    }
 
-        // Dishes
+    private function loadDishes($manager)
+    {
         $dishes = [];
         $statuses = ['created', 'modified', 'deleted'];
         for ($i = 0; $i < 60; $i++) {
@@ -115,7 +135,7 @@ class AppFixtures extends Fixture
             $dish->setDescription($this->faker->sentence());
             $dish->setStatus($statuses[rand(0, 2)]);
             $dish->setCreatedAt($this->faker->dateTime());
-            $dish->setCategory($categories[rand(0, 3)]);
+            $dish->setCategory($this->categories[rand(0, 3)]);
 
             if ($dish->getStatus() == 'modified') {
                 $dish->setUpdatedAt($this->faker->dateTimeBetween($dish->getCreatedAt(), 'now'));
@@ -146,34 +166,54 @@ class AppFixtures extends Fixture
             $dishes[] = $dish;
         }
 
+        $this->dishes = $dishes;
         $manager->flush();
+    }
 
-        // DishTag & DishIngredient
-        foreach ($dishes as $dish) {
+    private function loadDishTags($manager)
+    {
+        $existingTags = [];
+        foreach ($this->dishes as $dish) {
 
             for ($i = 0; $i < rand(1, 6); $i++) {
                 $randomSelector = rand(0, 99);
-                $tag = $tags[$randomSelector]->getId();
+                $tag = $this->tags[$randomSelector]->getId();
 
-                $dishTag = new DishTag;
-                $dishTag->setDishId($dish->getId());
-                $dishTag->setTagId($tag);
-                $manager->persist($dishTag);
+                if (!in_array($tag, $existingTags)) {
+                    $dishTag = new DishTag;
+                    $dishTag->setDishId($dish->getId());
+                    $dishTag->setTagId($tag);
+                    $manager->persist($dishTag);
+                    $existingTags[$i] = $tag;
+                } else {
+                    $i--;
+                }
             }
+        }
 
-            $manager->flush();
+        $manager->flush();
+    }
 
+    private function loadDishIngredients($manager)
+    {
+        $existingIngredients = [];
+        foreach ($this->dishes as $dish) {
             for ($i = 0; $i < rand(4, 12); $i++) {
                 $randomSelector = rand(0, 99);
-                $ingredient = $ingredients[$randomSelector]->getId();
+                $ingredient = $this->ingredients[$randomSelector]->getId();
 
-                $dishIngredient = new DishIngredient;
-                $dishIngredient->setDishId($dish->getId());
-                $dishIngredient->setIngredientId($ingredient);
-                $manager->persist($dishIngredient);
+                if (!in_array($ingredient, $existingIngredients)) {
+                    $dishIngredient = new DishIngredient;
+                    $dishIngredient->setDishId($dish->getId());
+                    $dishIngredient->setIngredientId($ingredient);
+                    $manager->persist($dishIngredient);
+                    $existingIngredients[$i] = $ingredient;
+                } else {
+                    $i--;
+                }
             }
-
-            $manager->flush();
         }
+
+        $manager->flush();
     }
 }

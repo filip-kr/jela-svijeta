@@ -133,7 +133,6 @@ final class DataFormatService
             foreach ($dishTags as $dt) {
                 if ($isJapanese) {
                     $tagTranslation = $this->tagRepository->findOneBy(['id' => $dt['id']]);
-                    // dd($tagTranslation);
                     $tagTranslation = $this->languageService->getTranslation($tagTranslation);
                 }
 
@@ -165,11 +164,6 @@ final class DataFormatService
     private function setIngredients($isJapanese): void
     {
         $dishIngredients = $this->getIngredients();
-        // foreach ($dishIngredients as $di) {
-        //     $di[0]->dishId = $di['dishId'];
-        //     array_push($dishIngredients, $di[0]);
-        //     array_shift($dishIngredients);
-        // }
 
         for ($i = 0; $i < count($this->rawData); $i++) {
             $this->formattedData[$i]['ingredients'] = [];
