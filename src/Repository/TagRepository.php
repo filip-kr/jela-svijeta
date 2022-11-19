@@ -43,7 +43,7 @@ class TagRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('t')
             ->select('t, dt.dishId')
-            ->innerJoin('App\Entity\Dishtag', 'dt', 'WITH', 'dt.tagId = t.id')
+            ->innerJoin('App\Entity\DishTag', 'dt', 'WITH', 'dt.tagId = t.id')
             ->andWhere('dt.dishId IN (:dishId)')
             ->setParameter('dishId', $dish);
 

@@ -113,7 +113,7 @@ class AppFixtures extends Fixture
 
             $dish->setTitle($this->foodFakerEn->foodName());
             $dish->setDescription($this->faker->sentence());
-            $dish->setStatus(array_rand($statuses));
+            $dish->setStatus($statuses[rand(0, 2)]);
             $dish->setCreatedAt($this->faker->dateTime());
             $dish->setCategory($categories[rand(0, 3)]);
 
