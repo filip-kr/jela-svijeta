@@ -27,6 +27,8 @@ class DishController extends AbstractController
         PaginationService $paginator
     ): JsonResponse 
     {
+        // TODO: diff_time control, don't repeat ingredients/tags
+
         if (!$languageService->isLanguageSet($request)) {
             return $this->json('lang parameter is required: \'en\' for English OR \'ja\' for Japanese');
         }

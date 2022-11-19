@@ -24,6 +24,7 @@ final class DataFormatService
     {
         $this->rawData = $data;
         $isJapanese = $this->languageService->isLanguageJapanese($params);
+        $isSetWithTags = isset($params['with']) && str_contains($params['with'], 'tags') ? true : false;
 
         if ($isJapanese) {
             $dishTranslations = [];
@@ -46,7 +47,7 @@ final class DataFormatService
         }
 
         if (isset($params['tags'])) {
-            $this->filterOutDishesWithMissingTags(explode(',', $params['tags']));
+            $this->filterOutDishesWithMissingTags(explode(',', $params['tags']), $isJapanese, $isSetWithTags);
         }
 
         return $this->formattedData;
@@ -125,27 +126,24 @@ final class DataFormatService
     private function setTags($isJapanese): void
     {
         $dishTags = $this->getTags();
-        foreach ($dishTags as $dt) {
-            $dt[0]->dishId = $dt['dishId'];
-            array_push($dishTags, $dt[0]);
-            array_shift($dishTags);
-        }
 
         for ($i = 0; $i < count($this->rawData); $i++) {
             $this->formattedData[$i]['tags'] = [];
 
             foreach ($dishTags as $dt) {
                 if ($isJapanese) {
-                    $tagTranslation = $this->languageService->getTranslation($dt);
+                    $tagTranslation = $this->tagRepository->findOneBy(['id' => $dt['id']]);
+                    // dd($tagTranslation);
+                    $tagTranslation = $this->languageService->getTranslation($tagTranslation);
                 }
 
-                if ($this->formattedData[$i]['id'] == $dt->dishId) {
+                if ($this->formattedData[$i]['id'] == $dt['dishId']) {
                     array_push(
                         $this->formattedData[$i]['tags'],
                         [
-                            'id' => $dt->getId(),
-                            'title' => $isJapanese ? $tagTranslation['ja']['title'] : $dt->getTitle(),
-                            'slug' => $dt->getSlug()
+                            'id' => $dt['id'],
+                            'title' => $isJapanese ? $tagTranslation['ja']['title'] : $dt['title'],
+                            'slug' => $dt['slug']
                         ]
                     );
                 }
@@ -167,27 +165,28 @@ final class DataFormatService
     private function setIngredients($isJapanese): void
     {
         $dishIngredients = $this->getIngredients();
-        foreach ($dishIngredients as $di) {
-            $di[0]->dishId = $di['dishId'];
-            array_push($dishIngredients, $di[0]);
-            array_shift($dishIngredients);
-        }
+        // foreach ($dishIngredients as $di) {
+        //     $di[0]->dishId = $di['dishId'];
+        //     array_push($dishIngredients, $di[0]);
+        //     array_shift($dishIngredients);
+        // }
 
         for ($i = 0; $i < count($this->rawData); $i++) {
             $this->formattedData[$i]['ingredients'] = [];
 
             foreach ($dishIngredients as $di) {
                 if ($isJapanese) {
+                    $ingredientTranslation = $this->ingredientRepository->findOneBy(['id' => $di['id']]);
                     $ingredientTranslation = $this->languageService->getTranslation($di);
                 }
 
-                if ($this->formattedData[$i]['id'] == $di->dishId) {
+                if ($this->formattedData[$i]['id'] == $di['dishId']) {
                     array_push(
                         $this->formattedData[$i]['ingredients'],
                         [
-                            'id' => $di->getId(),
-                            'title' => $isJapanese ? $ingredientTranslation['ja']['title'] : $di->getTitle(),
-                            'slug' => $di->getSlug()
+                            'id' => $di['id'],
+                            'title' => $isJapanese ? $ingredientTranslation['ja']['title'] : $di['title'],
+                            'slug' => $di['slug']
                         ]
                     );
                 }
@@ -195,16 +194,25 @@ final class DataFormatService
         }
     }
 
-    private function filterOutDishesWithMissingTags($tags): void
+    private function filterOutDishesWithMissingTags($tags, $isJapanese, $isSetWithTags): void
     {
+        if (!$isSetWithTags) {
+            $this->setTags($isJapanese);
+        }
+
         $filteredDishes = [];
         foreach ($this->formattedData as $fd) {
+
+
             $fdTags = [];
             for ($i = 0; $i < count($fd['tags']); $i++) {
                 $fdTags[$i] = $fd['tags'][$i]['id'];
             }
 
             if (count(array_intersect($fdTags, $tags)) == count($tags)) {
+                if (!$isSetWithTags) {
+                    unset($fd['tags']);
+                }
                 $filteredDishes[] = $fd;
             }
         }

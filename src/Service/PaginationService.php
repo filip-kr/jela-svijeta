@@ -13,6 +13,11 @@ final class PaginationService
 
     public function paginate($array, $page = 1, $perPage = 10)
     {
+        if (!$this->isParametersValid($page, $perPage)) {
+            $page = 1;
+            $perPage = 10;
+        }
+
         return $this->paginator->paginate($array, $page, $perPage);
     }
 
@@ -63,7 +68,7 @@ final class PaginationService
                 $next = NULL;
             }
 
-            $self = $uri;
+            $self = preg_replace('/page=(.?)/', 'page=' . $metadata['currentPage'], $uri);
         }
 
         return $links = [
@@ -71,5 +76,18 @@ final class PaginationService
             'next' => $next,
             'self' => $self
         ];
+    }
+
+    private function isParametersValid($page, $perPage)
+    {
+        if (!is_numeric($page) || $page <= 0) {
+            return false;
+        }
+
+        if (!is_numeric($perPage) || $perPage <= 0) {
+            return false;
+        }
+
+        return true;
     }
 }
