@@ -38,16 +38,4 @@ class IngredientRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
-    public function findByDishId(array $dish): array
-    {
-        $query = $this->createQueryBuilder('i')
-            ->select('i.id, i.title, i.slug, di.dishId')
-            ->innerJoin('App\Entity\DishIngredient', 'di', 'WITH', 'di.ingredientId = i.id')
-            ->andWhere('di.dishId IN (:dishId)')
-            ->setParameter('dishId', $dish);
-
-        return $query->getQuery()
-            ->getResult();
-    }
 }

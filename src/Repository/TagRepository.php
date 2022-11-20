@@ -38,15 +38,4 @@ class TagRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
-    public function findByDishId(array $dish): array
-    {
-        $query = $this->createQueryBuilder('t')
-            ->select('t.id, t.title, t.slug, dt.dishId')
-            ->innerJoin('App\Entity\DishTag', 'dt', 'WITH', 'dt.tagId = t.id')
-            ->andWhere('dt.dishId IN (:dishId)')
-            ->setParameter('dishId', $dish);
-
-        return $query->getQuery()->getResult();
-    }
 }

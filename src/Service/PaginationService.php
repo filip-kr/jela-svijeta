@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Knp\Component\Pager\PaginatorInterface;
 
 final class PaginationService
@@ -11,7 +12,7 @@ final class PaginationService
         $this->paginator = $paginator;
     }
 
-    public function paginate($array, $page = 1, $perPage = 10)
+    public function paginate($array, $page = 1, $perPage = 10): SlidingPagination
     {
         if (!$this->isParametersValid($page, $perPage)) {
             $page = 1;
@@ -78,7 +79,7 @@ final class PaginationService
         ];
     }
 
-    private function isParametersValid($page, $perPage)
+    private function isParametersValid($page, $perPage): bool
     {
         if (!is_numeric($page) || $page <= 0) {
             return false;
