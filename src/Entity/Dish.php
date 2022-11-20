@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DishRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -40,8 +42,20 @@ class Dish implements Translatable
     #[ORM\ManyToOne(inversedBy: 'dishes', fetch: 'EAGER')]
     private ?Category $category = null;
 
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'dishes', fetch: 'EAGER')]
+    private Collection $tags;
+
+    #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'dishes', fetch: 'EAGER')]
+    private Collection $ingredients;
+
     #[Gedmo\Locale]
     private $locale;
+
+    public function __construct()
+    {
+        $this->tags = new ArrayCollection();
+        $this->ingredients = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -135,5 +149,53 @@ class Dish implements Translatable
     public function setTranslatableLocale($locale)
     {
         $this->locale = $locale;
+    }
+
+     /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ingredient>
+     */
+    public function getIngredients(): Collection
+    {
+        return $this->ingredients;
+    }
+
+    public function addIngredient(Ingredient $ingredient): self
+    {
+        if (!$this->ingredients->contains($ingredient)) {
+            $this->ingredients->add($ingredient);
+        }
+
+        return $this;
+    }
+
+    public function removeIngredient(Ingredient $ingredient): self
+    {
+        $this->ingredients->removeElement($ingredient);
+
+        return $this;
     }
 }

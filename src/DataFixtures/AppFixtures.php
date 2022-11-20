@@ -10,8 +10,6 @@ use App\Entity\Dish;
 use App\Entity\Ingredient;
 use App\Entity\Language;
 use App\Entity\Tag;
-use App\Entity\DishTag;
-use App\Entity\DishIngredient;
 use Gedmo\Translatable\Entity\Translation;
 use Faker\Factory;
 use FakerRestaurant\Provider\en_US\Restaurant as EnglishRestaurant;
@@ -172,19 +170,17 @@ class AppFixtures extends Fixture
 
     private function loadDishTags($manager)
     {
-        $existingTags = [];
+        $addedTags = [];
         foreach ($this->dishes as $dish) {
 
             for ($i = 0; $i < rand(1, 6); $i++) {
                 $randomSelector = rand(0, 99);
-                $tag = $this->tags[$randomSelector]->getId();
+                $tag = $this->tags[$randomSelector];
 
-                if (!in_array($tag, $existingTags)) {
-                    $dishTag = new DishTag;
-                    $dishTag->setDishId($dish->getId());
-                    $dishTag->setTagId($tag);
+                if (!in_array($tag, $addedTags)) {
+                    $dishTag = $dish->addTag($tag);
                     $manager->persist($dishTag);
-                    $existingTags[$i] = $tag;
+                    $addedTags[$i] = $tag;
                 } else {
                     $i--;
                 }
@@ -196,18 +192,16 @@ class AppFixtures extends Fixture
 
     private function loadDishIngredients($manager)
     {
-        $existingIngredients = [];
+        $addedIngredients = [];
         foreach ($this->dishes as $dish) {
             for ($i = 0; $i < rand(4, 12); $i++) {
                 $randomSelector = rand(0, 99);
-                $ingredient = $this->ingredients[$randomSelector]->getId();
+                $ingredient = $this->ingredients[$randomSelector];
 
-                if (!in_array($ingredient, $existingIngredients)) {
-                    $dishIngredient = new DishIngredient;
-                    $dishIngredient->setDishId($dish->getId());
-                    $dishIngredient->setIngredientId($ingredient);
+                if (!in_array($ingredient, $addedIngredients)) {
+                    $dishIngredient = $dish->addIngredient($ingredient);
                     $manager->persist($dishIngredient);
-                    $existingIngredients[$i] = $ingredient;
+                    $addedIngredients[$i] = $ingredient;
                 } else {
                     $i--;
                 }
