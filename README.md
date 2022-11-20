@@ -73,7 +73,7 @@ ključnih riječi u parametar `with`, tada se u responsu na svakom objektu još 
 pojaviti i property `tags`, `category` ili/i `ingredients`.
 
 ### 2. Lokalno postavljanje
-1. Klonirati repozitorij: `git clone git@github.com:filip-kr/jela-svijeta.git`
+1. Klonirati repozitorij: `git clone https://github.com/filip-kr/jela-svijeta.git`
 2. Instalirati zavisnosti: `composer update`
 3. Kreirati bazu i korisnika sa svim ovlastima prema podacima iz `.env` datoteke: </br> `DATABASE_URL="mysql://js-filip-kr:js256@127.0.0.1:3306/jelasvijeta?serverVersion=mariadb-10.4.25&charset=utf8mb4"` </br> ili kreirati vlastitu i prilagoditi postavke. Obratiti pažnju na verziju baze i UTF8 charset radi prikaza japanskih znakova.
 4. Izvesti migraciju: `bin/console doctrine:migrations:migrate`
